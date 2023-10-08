@@ -1,13 +1,13 @@
 const pool = require('./index.js')
 
-const UserModel = {
+const userModel = {
    async createUser(username, phoneNumber) {
       const [results] = await pool.query('INSERT INTO users (username, phone_number, phone_verified) VALUES (?, ?, false)', [username, phoneNumber]);
       return results.insertId;
    },
 
-   async getUserById(userId) {
-      const [rows] = await pool.query('SELECT * FROM users WHERE userID = ?', [userId]);
+   async getUserById(userID) {
+      const [rows] = await pool.query('SELECT * FROM users WHERE userID = ?', [userID]);
       return rows[0];
    },
 
@@ -16,14 +16,14 @@ const UserModel = {
       return rows;
    },
 
-   async updateUser(userId, username, phoneNumber) {
-      await pool.query('UPDATE users SET username = ?, phone_number = ? WHERE userID = ?', [username, phoneNumber, userId]);
+   async updateUser(userID, username, phoneNumber) {
+      await pool.query('UPDATE users SET username = ?, phone_number = ? WHERE userID = ?', [username, phoneNumber, userID]);
    },
 
-   async deleteUser(userId) {
-      await pool.query('DELETE FROM users WHERE userID = ?', [userId]);
+   async deleteUser(userID) {
+      await pool.query('DELETE FROM users WHERE userID = ?', [userID]);
    }
 
 }
 
-module.exports = UserModel;
+module.exports = userModel;

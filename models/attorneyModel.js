@@ -1,13 +1,13 @@
 const pool = require('./index.js');
 
-const AttorneyModel = {
+const attorneyModel = {
    async createAttorney(username, phone_number) {
       const [result] = await pool.query('INSERT INTO attorneys (username, phone_number, phone_verified) VALUES (?, ?, FALSE)', [username, phone_number]);
       return result.insertId;
    },
 
-   async getAttorneyById(attorneyId) {
-      const [rows] = await pool.query('SELECT * FROM attorneys WHERE attorneyID = ?', [attorneyId]);
+   async getAttorneyById(attorneyID) {
+      const [rows] = await pool.query('SELECT * FROM attorneys WHERE attorneyID = ?', [attorneyID]);
       return rows[0];
    },
 
@@ -16,13 +16,13 @@ const AttorneyModel = {
       return rows;
    },
 
-   async updateAttorney(attorneyId, username, phone_number) {
-      await pool.query('UPDATE attorneys SET username = ?, phone_number = ? WHERE attorneyID = ?', [username, phone_number, attorneyId]);
+   async updateAttorney(attorneyID, username, phone_number) {
+      await pool.query('UPDATE attorneys SET username = ?, phone_number = ? WHERE attorneyID = ?', [username, phone_number, attorneyID]);
    },
 
-   async deleteAttorney(attorneyId) {
-      await pool.query('DELETE FROM attorneys WHERE attorneyID = ?', [attorneyId]);
+   async deleteAttorney(attorneyID) {
+      await pool.query('DELETE FROM attorneys WHERE attorneyID = ?', [attorneyID]);
    }
 };
 
-module.exports = AttorneyModel;
+module.exports = attorneyModel;

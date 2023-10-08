@@ -1,4 +1,4 @@
-const UserModel = require('../models/userModel.js');
+const userModel = require('../models/userModel.js');
 
 const userController = {
    // Neuen Benutzer erstellen
@@ -6,8 +6,8 @@ const userController = {
       console.log(req.body);
       try {
          const { username, phone_number } = req.body;
-         const userId = await UserModel.createUser(username, phone_number);
-         res.status(201).json({ userId, message: 'User created successfully' });
+         const userID = await userModel.createUser(username, phone_number);
+         res.status(201).json({ userID, message: 'User created successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
       }
@@ -16,8 +16,8 @@ const userController = {
    // Benutzerinformationen abrufen
    async getUser(req, res) {
       try {
-         const userId = req.params.id;
-         const user = await UserModel.getUserById(userId);
+         const userID = req.params.userID;
+         const user = await userModel.getUserById(userID);
          if (user) {
             res.status(200).json(user);
          } else {
@@ -31,7 +31,7 @@ const userController = {
    // Alle Benutzer abrufen
    async getAllUsers(req, res) {
       try {
-         const users = await UserModel.getAllUsers();
+         const users = await userModel.getAllUsers();
          res.status(200).json(users);
       } catch (error) {
          res.status(500).json({ error: error.message });
@@ -41,9 +41,9 @@ const userController = {
    // Benutzerinformationen aktualisieren
    async updateUser(req, res) {
       try {
-         const userId = req.params.id;
+         const userID = req.params.userID;
          const { username, phone_number } = req.body;
-         await UserModel.updateUser(userId, username, phone_number);
+         await userModel.updateUser(userID, username, phone_number);
          res.status(200).json({ message: 'User updated successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
@@ -53,8 +53,8 @@ const userController = {
    // Benutzer löschen
    async deleteUser(req, res) {
       try {
-         const userId = req.params.id;
-         await UserModel.deleteUser(userId);
+         const userID = req.params.userID;
+         await userModel.deleteUser(userID);
          res.status(200).json({ message: 'User deleted successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });

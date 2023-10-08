@@ -1,11 +1,11 @@
-const AttorneyModel = require('../models/attorneyModel.js');
+const attorneyModel = require('../models/attorneyModel.js');
 
 const attorneyController = {
    async createAttorney(req, res) {
       try {
          const { username, phone_number } = req.body;
-         const attorneyId = await AttorneyModel.createAttorney(username, phone_number);
-         res.status(201).json({ attorneyId, message: 'Attorney created successfully' });
+         const attorneyID = await attorneyModel.createAttorney(username, phone_number);
+         res.status(201).json({ attorneyID, message: 'Attorney created successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
       }
@@ -13,8 +13,8 @@ const attorneyController = {
 
    async getAttorney(req, res) {
       try {
-         const attorneyId = req.params.id;
-         const attorney = await AttorneyModel.getAttorneyById(attorneyId);
+         const attorneyID = req.params.attorneyID;
+         const attorney = await attorneyModel.getAttorneyById(attorneyID);
          if (attorney) {
             res.status(200).json(attorney);
          } else {
@@ -27,7 +27,7 @@ const attorneyController = {
 
    async getAllAttorneys(req, res) {
       try {
-         const attorneys = await AttorneyModel.getAllAttorneys();
+         const attorneys = await attorneyModel.getAllAttorneys();
          res.status(200).json(attorneys);
       } catch (error) {
          res.status(500).json({ error: error.message });
@@ -36,9 +36,9 @@ const attorneyController = {
 
    async updateAttorney(req, res) {
       try {
-         const attorneyId = req.params.id;
+         const attorneyID = req.params.attorneyID;
          const { username, phone_number } = req.body;
-         await AttorneyModel.updateAttorney(attorneyId, username, phone_number);
+         await attorneyModel.updateAttorney(attorneyID, username, phone_number);
          res.status(200).json({ message: 'Attorney updated successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
@@ -47,8 +47,8 @@ const attorneyController = {
 
    async deleteAttorney(req, res) {
       try {
-         const attorneyId = req.params.id;
-         await AttorneyModel.deleteAttorney(attorneyId);
+         const attorneyID = req.params.attorneyID;
+         await attorneyModel.deleteAttorney(attorneyID);
          res.status(200).json({ message: 'Attorney deleted successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });

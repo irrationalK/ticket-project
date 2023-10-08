@@ -3,9 +3,9 @@ const attorneyController = require('../controllers/attorneyController');
 const router = express.Router();
 
 router.post('/', attorneyController.createAttorney);
-router.get('/:id', attorneyController.getAttorney);
+router.get('/:attorneyID', attorneyController.getAttorney);
 router.get('/', attorneyController.getAllAttorneys);
-router.put('/:id', attorneyController.updateAttorney);
-router.delete('/:id', attorneyController.deleteAttorney);
+router.put('/:attorneyID', attorneyController.updateAttorney);
+router.delete('/:attorneyID', attorneyController.deleteAttorney);
 
 module.exports = router;
