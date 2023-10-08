@@ -16,7 +16,7 @@ const userController = {
    // Benutzerinformationen abrufen
    async getUser(req, res) {
       try {
-         const userId = req.params.id;  // Wenn die Route z.B. /users/:id lautet
+         const userId = req.params.id;
          const user = await UserModel.getUserById(userId);
          if (user) {
             res.status(200).json(user);
