@@ -23,7 +23,7 @@ coverage
 build/Release
 
 # Dependency directory
-node_modulesg
+node_modules
 
 # Debug log from npm
 npm-debug.log
