@@ -1,17 +1,6 @@
 const userModel = require('../models/userModel.js');
 
 const userController = {
-   // Neuen Benutzer erstellen
-   async createUser(req, res) {
-      console.log(req.body);
-      try {
-         const { username, phone_number } = req.body;
-         const userID = await userModel.createUser(username, phone_number);
-         res.status(201).json({ userID, message: 'User created successfully' });
-      } catch (error) {
-         res.status(500).json({ error: error.message });
-      }
-   },
 
    // Benutzerinformationen abrufen
    async getUser(req, res) {
@@ -42,8 +31,8 @@ const userController = {
    async updateUser(req, res) {
       try {
          const userID = req.params.userID;
-         const { username, phone_number } = req.body;
-         await userModel.updateUser(userID, username, phone_number);
+         const { username, phoneNumber } = req.body;
+         await userModel.updateUser(userID, username, phoneNumber);
          res.status(200).json({ message: 'User updated successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });

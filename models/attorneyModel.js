@@ -1,8 +1,8 @@
-const pool = require('./index.js');
+const pool = require('../db/connect.js');
 
 const attorneyModel = {
-   async createAttorney(username, phone_number) {
-      const [result] = await pool.query('INSERT INTO attorneys (username, phone_number, phone_verified) VALUES (?, ?, FALSE)', [username, phone_number]);
+   async createEntity(username, phoneNumber) {
+      const [result] = await pool.query('INSERT INTO attorneys (username, phoneNumber, phoneVerified) VALUES (?, ?, FALSE)', [username, phoneNumber]);
       return result.insertId;
    },
 
@@ -11,13 +11,22 @@ const attorneyModel = {
       return rows[0];
    },
 
+   async getEntityByPhoneNumber(phoneNumber) {
+      const [rows] = await pool.query('SELECT * FROM attorneys WHERE phoneNumber = ?', [phoneNumber]);
+      return rows[0];
+   },
+
    async getAllAttorneys() {
       const [rows] = await pool.query('SELECT * FROM attorneys');
       return rows;
    },
 
-   async updateAttorney(attorneyID, username, phone_number) {
-      await pool.query('UPDATE attorneys SET username = ?, phone_number = ? WHERE attorneyID = ?', [username, phone_number, attorneyID]);
+   async markEntityAsVerified(phoneNumber) {
+      await pool.query('UPDATE attorneys SET phoneVerified = true WHERE phoneNumber = ?', [phoneNumber]);
+   },
+
+   async updateAttorney(attorneyID, username, phoneNumber) {
+      await pool.query('UPDATE attorneys SET username = ?, phoneNumber = ? WHERE attorneyID = ?', [username, phoneNumber, attorneyID]);
    },
 
    async deleteAttorney(attorneyID) {

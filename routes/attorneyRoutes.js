@@ -2,7 +2,6 @@ const express = require('express');
 const attorneyController = require('../controllers/attorneyController');
 const router = express.Router();
 
-router.post('/', attorneyController.createAttorney);
 router.get('/:attorneyID', attorneyController.getAttorney);
 router.get('/', attorneyController.getAllAttorneys);
 router.put('/:attorneyID', attorneyController.updateAttorney);

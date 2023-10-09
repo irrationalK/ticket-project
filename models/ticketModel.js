@@ -1,4 +1,4 @@
-const pool = require('./index.js')
+const pool = require('../db/connect.js')
 
 const ticketModel = {
    async createTicket(userID, offense) {
@@ -23,9 +23,9 @@ const ticketModel = {
       return rows;
    },
 
-   async updateTicket(ticketID, status, offense, note_picture, ticket_picture) {
-      await pool.query('UPDATE tickets SET status = ?, offense = ?, note_picture = ?, ticket_picture = ? WHERE ticketID = ?',
-         [status, offense, note_picture, ticket_picture, ticketID]);
+   async updateTicket(ticketID, status, offense, notePicture, ticketPicture) {
+      await pool.query('UPDATE tickets SET status = ?, offense = ?, notePicture = ?, ticketPicture = ? WHERE ticketID = ?',
+         [status, offense, notePicture, ticketPicture, ticketID]);
    },
 
    async deleteTicket(ticketID) {

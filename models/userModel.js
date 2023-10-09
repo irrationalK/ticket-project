@@ -1,8 +1,8 @@
-const pool = require('./index.js')
+const pool = require('../db/connect.js')
 
 const userModel = {
-   async createUser(username, phoneNumber) {
-      const [results] = await pool.query('INSERT INTO users (username, phone_number, phone_verified) VALUES (?, ?, false)', [username, phoneNumber]);
+   async createEntity(username, phoneNumber) {
+      const [results] = await pool.query('INSERT INTO users (username, phoneNumber, phoneVerified) VALUES (?, ?, false)', [username, phoneNumber]);
       return results.insertId;
    },
 
@@ -11,13 +11,22 @@ const userModel = {
       return rows[0];
    },
 
+   async getEntityByPhoneNumber(phoneNumber) {
+      const [rows] = await pool.query('SELECT * FROM users WHERE phoneNumber = ?', [phoneNumber]);
+      return rows[0];
+   },
+
    async getAllUsers() {
       const [rows] = await pool.query('SELECT * FROM users');
       return rows;
    },
 
+   async markEntityAsVerified(phoneNumber) {
+      await pool.query('UPDATE users SET phoneVerified = true WHERE phoneNumber = ?', [phoneNumber]);
+   },
+
    async updateUser(userID, username, phoneNumber) {
-      await pool.query('UPDATE users SET username = ?, phone_number = ? WHERE userID = ?', [username, phoneNumber, userID]);
+      await pool.query('UPDATE users SET username = ?, phoneNumber = ? WHERE userID = ?', [username, phoneNumber, userID]);
    },
 
    async deleteUser(userID) {

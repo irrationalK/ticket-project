@@ -1,15 +1,6 @@
 const attorneyModel = require('../models/attorneyModel.js');
 
 const attorneyController = {
-   async createAttorney(req, res) {
-      try {
-         const { username, phone_number } = req.body;
-         const attorneyID = await attorneyModel.createAttorney(username, phone_number);
-         res.status(201).json({ attorneyID, message: 'Attorney created successfully' });
-      } catch (error) {
-         res.status(500).json({ error: error.message });
-      }
-   },
 
    async getAttorney(req, res) {
       try {
@@ -37,8 +28,8 @@ const attorneyController = {
    async updateAttorney(req, res) {
       try {
          const attorneyID = req.params.attorneyID;
-         const { username, phone_number } = req.body;
-         await attorneyModel.updateAttorney(attorneyID, username, phone_number);
+         const { username, phoneNumber } = req.body;
+         await attorneyModel.updateAttorney(attorneyID, username, phoneNumber);
          res.status(200).json({ message: 'Attorney updated successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
