@@ -1,10 +1,12 @@
 const pool = require('../db/connect.js')
 
 const ticketModel = {
-   async createTicket(userID, offense) {
+   async createTicket(userID, offense, notePicture, ticketPicture) {
       const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');  // Format: YYYY-MM-DD HH:MM:SS
-      const [results] = await pool.query('INSERT INTO tickets (userID, date, status, offense) VALUES (?, ?, "open", ?)',
-         [userID, currentDate, offense]);
+      const [results] = await pool.query(
+         'INSERT INTO tickets (userID, date, status, offense, notePicture, ticketPicture) VALUES (?, ?, "open", ?, ?, ?)',
+         [userID, currentDate, offense, notePicture, ticketPicture]
+      );
       return results.insertId;
    },
 
