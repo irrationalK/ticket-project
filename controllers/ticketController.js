@@ -3,7 +3,8 @@ const ticketModel = require('../models/ticketModel')
 const ticketController = {
    async createTicket(req, res) {
       try {
-         const { userID, offense } = req.body;
+         const userID = req.user.id;
+         const offense = req.body;
          const ticketID = await ticketModel.createTicket(userID, offense);
          res.status(201).json({ ticketID, message: 'Ticket created successfully' });
       } catch (error) {
