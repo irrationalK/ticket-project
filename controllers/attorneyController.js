@@ -4,7 +4,7 @@ const attorneyController = {
 
    async getAttorney(req, res) {
       try {
-         const attorneyID = req.params.attorneyID;
+         const attorneyID = req.user.id;
          const attorney = await attorneyModel.getAttorneyById(attorneyID);
          if (attorney) {
             res.status(200).json(attorney);
@@ -27,7 +27,7 @@ const attorneyController = {
 
    async updateAttorney(req, res) {
       try {
-         const attorneyID = req.params.attorneyID;
+         const attorneyID = req.user.id;
          const { username, phoneNumber } = req.body;
          await attorneyModel.updateAttorney(attorneyID, username, phoneNumber);
          res.status(200).json({ message: 'Attorney updated successfully' });
@@ -38,7 +38,7 @@ const attorneyController = {
 
    async deleteAttorney(req, res) {
       try {
-         const attorneyID = req.params.attorneyID;
+         const attorneyID = req.user.id;
          await attorneyModel.deleteAttorney(attorneyID);
          res.status(200).json({ message: 'Attorney deleted successfully' });
       } catch (error) {

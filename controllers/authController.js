@@ -32,7 +32,7 @@ const register = async (req, res) => {
 
    // Eintrag in der Datenbank speichern
    const entityID = await model.createEntity(username, phoneNumber);
-
+   console.log('test: ', entityID)
    // OTP senden
    try {
       await client.verify.v2.services(process.env.TWILIO_VERIFY_SERVICE_SID)
@@ -54,7 +54,7 @@ const sendOtp = async (req, res) => {
          .create({ to: phoneNumber, channel: 'sms' })
          .then(verification => console.log(verification.status));
 
-      res.status(200).json(response.status);
+      res.status(200).json(response.verification.status);
    } catch (error) {
       res.status(500).json({ error: error.message });
    }
@@ -66,6 +66,10 @@ const verifyOtp = async (req, res) => {
 
       let model;
       let role;
+      const ID_FIELDS = {
+         user: 'userID',
+         attorney: 'attorneyID'
+      };
       // Nutzergruppe überprüfen. Eine Handynummer kann nur einer Gruppe zugehören
       const user = await userModel.getEntityByPhoneNumber(phoneNumber);
       if (user) {
@@ -82,6 +86,9 @@ const verifyOtp = async (req, res) => {
       }
 
       const entity = await model.getEntityByPhoneNumber(phoneNumber);
+      // Bestimmen des richtigen ID-Feldnamens und dann des Wertes
+      const idField = ID_FIELDS[role];
+      const entityId = entity[idField];
 
       // OTP überprüfen
       const verification_check = await client.verify.v2.services(process.env.TWILIO_VERIFY_SERVICE_SID)
@@ -96,11 +103,12 @@ const verifyOtp = async (req, res) => {
 
          // Token generieren
          const payload = {
-            id: entity.id,
+            id: entityId,
             username: entity.username,
             phoneNumber: entity.phoneNumber,
             role: role
          };
+         console.log(payload);
          const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFETIME });
 
          res.json({ success: true, token });

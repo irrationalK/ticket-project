@@ -5,7 +5,7 @@ const userController = {
    // Benutzerinformationen abrufen
    async getUser(req, res) {
       try {
-         const userID = req.params.userID;
+         const userID = req.user.id;
          const user = await userModel.getUserById(userID);
          if (user) {
             res.status(200).json(user);
@@ -30,7 +30,7 @@ const userController = {
    // Benutzerinformationen aktualisieren
    async updateUser(req, res) {
       try {
-         const userID = req.params.userID;
+         const userID = req.user.id;
          const { username, phoneNumber } = req.body;
          await userModel.updateUser(userID, username, phoneNumber);
          res.status(200).json({ message: 'User updated successfully' });
@@ -42,7 +42,7 @@ const userController = {
    // Benutzer löschen
    async deleteUser(req, res) {
       try {
-         const userID = req.params.userID;
+         const userID = req.user.id;
          await userModel.deleteUser(userID);
          res.status(200).json({ message: 'User deleted successfully' });
       } catch (error) {
