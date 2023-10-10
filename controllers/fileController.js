@@ -1,26 +1,39 @@
-const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const { Upload } = require("@aws-sdk/lib-storage");
 const s3 = require('../config/s3Config');
+const crypto = require('crypto');
 
 const s3Upload = async (file) => {
+   // Eindeutiger Filename
+   const filename = crypto.randomBytes(16).toString('hex') + "-" + file.originalname;
+
    const uploadParams = {
       Bucket: process.env.AWS_BUCKET_NAME,
-      Key: file.originalname,
-      Body: file.stream,
+      Key: filename,
+      Body: file.buffer,
       ContentType: file.mimetype
    };
-   return await s3.send(new PutObjectCommand(uploadParams));
+
+   const uploader = new Upload({
+      client: s3,
+      params: uploadParams
+   });
+
+   await uploader.done();
+
+   return filename;  // Rückgabe des eindeutigen Filenamens, falls erforderlich
 };
 
-exports.uploadFile = async (req, res) => {
+const uploadFile = async (req, res) => {
    try {
-      console.log("req.body: ", req.body);
       if (!req.file) {
          return res.status(400).json({ success: false, message: 'No file uploaded.' });
       }
 
-      await s3Upload(req.file);
-      res.json({ success: true, message: 'File uploaded successfully!', fileLocation: req.file });
+      const filename = await s3Upload(req.file);
+      res.json({ success: true, message: 'File uploaded successfully!', fileLocation: filename });
    } catch (error) {
       res.status(500).json({ success: false, message: 'File upload failed.', error: error.message });
    }
 };
+
+module.exports = { uploadFile };
