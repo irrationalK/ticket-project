@@ -1,11 +1,11 @@
 const express = require('express');
+const router = express.Router();
 const ticketController = require('../controllers/ticketController');
 const upload = require('../middleware/multerStorage');
 const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 const authorizeTicketAccess = require('../middleware/authorizeTicketAccess');
 
-const router = express.Router();
 
 router.post('/', upload.fields([
    { name: 'notePicture', maxCount: 1 },

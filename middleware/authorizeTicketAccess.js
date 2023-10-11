@@ -21,17 +21,15 @@ async function authorizeTicketAccess(req, res, next) {
             break;
          case 'PUT':
          case 'DELETE':
-            // Nur Eigentümer können Tickets aktualisieren/löschen (Anwälte könnten in Zukunft abhängig von der Geschäftslogik erlaubt sein)
+            // Nur Eigentümer können Tickets aktualisieren/löschen
             if (isOwner) {
                return next();
             }
             break;
          default:
-            // Für alle anderen Methoden, lassen Sie es durch, oder fügen Sie zusätzliche Bedingungen hinzu, falls erforderlich
             return next();
       }
 
-      // Zugriff verweigert für alle anderen
       res.status(403).json({ message: 'You do not have permission to access this ticket.' });
    } catch (error) {
       res.status(500).json({ error: error.message });

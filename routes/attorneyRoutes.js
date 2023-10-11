@@ -1,9 +1,9 @@
 const express = require('express');
+const router = express.Router();
 const attorneyController = require('../controllers/attorneyController');
 const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 
-const router = express.Router();
 
 router.get('/me', authenticate, authorize('attorney'), attorneyController.getAttorney);
 router.put('/me', authenticate, authorize('attorney'), attorneyController.updateAttorney);
