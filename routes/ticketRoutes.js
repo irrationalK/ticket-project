@@ -1,7 +1,7 @@
 const express = require('express');
 const ticketController = require('../controllers/ticketController');
 const upload = require('../middleware/multerStorage');
-const authenticate = require('../controllers/authenticate');
+const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 const authorizeTicketAccess = require('../middleware/authorizeTicketAccess');
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const attorneyController = require('../controllers/attorneyController');
-const authenticate = require('../controllers/authenticate');
+const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 
 const router = express.Router();
