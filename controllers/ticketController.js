@@ -1,5 +1,5 @@
 const ticketModel = require('../models/ticketModel')
-const { s3Upload } = require('./fileController')
+const { s3Upload, s3Delete } = require('./fileController')
 
 const ticketController = {
    async createTicket(req, res) {
@@ -7,18 +7,17 @@ const ticketController = {
          const userID = req.user.id;
          const offense = req.body.offense;
 
-         let notePictureURL, ticketPictureURL;
+         let notePictureFilename, ticketPictureFilename;
 
          if (req.files && req.files.notePicture) {
-            console.log(req.files.notePicture);
-            notePictureURL = await s3Upload(req.files.notePicture[0]);
+            notePictureFilename = await s3Upload(req.files.notePicture[0]);
          }
 
          if (req.files && req.files.ticketPicture) {
-            ticketPictureURL = await s3Upload(req.files.ticketPicture[0]);
+            ticketPictureFilename = await s3Upload(req.files.ticketPicture[0]);
          }
 
-         const ticketID = await ticketModel.createTicket(userID, offense, notePictureURL, ticketPictureURL);
+         const ticketID = await ticketModel.createTicket(userID, offense, notePictureFilename, ticketPictureFilename);
          res.status(201).json({ ticketID, message: 'Ticket created successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
@@ -77,22 +76,28 @@ const ticketController = {
             return res.status(403).json({ message: "You don't have permission to update this ticket." });
          }
 
-         let notePictureURL, ticketPictureURL;
-         // Prüfen, ob Dateien hochgeladen wurden, und URLs aktualisieren
+         let notePictureFilename, ticketPictureFilename;
+         // Prüfen, ob Dateien hochgeladen wurden, ggf. alte Bilder löschen und Filenames aktualisieren
          if (req.files) {
             const notePictureFile = req.files['notePicture'] ? req.files['notePicture'][0] : null;
             const ticketPictureFile = req.files['ticketPicture'] ? req.files['ticketPicture'][0] : null;
 
             if (notePictureFile) {
-               notePictureURL = await s3Upload(notePictureFile);
+               if (ticket.notePicture) {
+                  await s3Delete(ticket.notePicture);
+               }
+               notePictureFilename = await s3Upload(notePictureFile);
             }
 
             if (ticketPictureFile) {
-               ticketPictureURL = await s3Upload(ticketPictureFile);
+               if (ticket.ticketPicture) {
+                  await s3Delete(ticket.ticketPicture);
+               }
+               ticketPictureFilename = await s3Upload(ticketPictureFile);
             }
          }
 
-         await ticketModel.updateTicket(ticketID, offense, notePictureURL, ticketPictureURL);
+         await ticketModel.updateTicket(ticketID, offense, notePictureFilename, ticketPictureFilename);
          res.status(200).json({ message: 'Ticket updated successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
@@ -102,6 +107,22 @@ const ticketController = {
    async deleteTicket(req, res) {
       try {
          const ticketID = req.params.ticketID;
+         const ticket = await ticketModel.getTicketById(ticketID);
+
+         if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+         }
+
+         // Bilder aus S3 löschen, wenn sie existieren
+         if (ticket.notePicture) {
+            await s3Delete(ticket.notePicture);
+         }
+
+         if (ticket.ticketPicture) {
+            await s3Delete(ticket.ticketPicture);
+         }
+
+         // Ticket aus der Datenbank löschen
          await ticketModel.deleteTicket(ticketID);
          res.status(200).json({ message: 'Ticket deleted successfully' });
       } catch (error) {

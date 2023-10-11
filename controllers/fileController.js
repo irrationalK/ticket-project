@@ -1,4 +1,5 @@
 const { Upload } = require("@aws-sdk/lib-storage");
+const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const s3 = require('../config/s3Config');
 const crypto = require('crypto');
 
@@ -23,6 +24,20 @@ const s3Upload = async (file) => {
    return filename;  // Rückgabe des eindeutigen Filenamens, falls erforderlich
 };
 
+const s3Delete = async (filename) => {
+   const deleteParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: filename
+   };
+
+   try {
+      await s3.send(new DeleteObjectCommand(deleteParams));
+      console.log("Image successfully deleted");
+   } catch (error) {
+      console.log("Error deleting image", error);
+   }
+};
+
 const uploadFile = async (req, res) => {
    try {
       if (!req.file) {
@@ -38,5 +53,6 @@ const uploadFile = async (req, res) => {
 
 module.exports = {
    s3Upload,
+   s3Delete,
    uploadFile
 };

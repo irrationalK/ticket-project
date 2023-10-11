@@ -25,7 +25,7 @@ const ticketModel = {
       return rows;
    },
 
-   async updateTicket(ticketID, offense, notePictureURL, ticketPictureURL) {
+   async updateTicket(ticketID, offense, notePictureFilename, ticketPictureFilename) {
       const updateData = [];
       const queryValues = [];
 
@@ -34,14 +34,14 @@ const ticketModel = {
          queryValues.push(offense);
       }
 
-      if (notePictureURL) {
+      if (notePictureFilename) {
          updateData.push('notePicture = ?');
-         queryValues.push(notePictureURL);
+         queryValues.push(notePictureFilename);
       }
 
-      if (ticketPictureURL) {
+      if (ticketPictureFilename) {
          updateData.push('ticketPicture = ?');
-         queryValues.push(ticketPictureURL);
+         queryValues.push(ticketPictureFilename);
       }
 
       // Wenn keine Daten zur Aktualisierung vorhanden sind, können wir hier einen Fehler auslösen oder einfach zurückkehren
