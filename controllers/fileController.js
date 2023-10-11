@@ -36,4 +36,7 @@ const uploadFile = async (req, res) => {
    }
 };
 
-module.exports = { uploadFile };
+module.exports = {
+   s3Upload,
+   uploadFile
+};

@@ -9,14 +9,26 @@ async function authorizeTicketAccess(req, res, next) {
          return res.status(404).json({ message: 'Ticket not found' });
       }
 
-      // Wenn der authentifizierte Benutzer der Ticket-Ersteller ist
-      if (ticket.userID === req.user.id) {
-         return next();
-      }
+      const isOwner = ticket.userID === req.user.id;
+      const isAttorney = req.user.role === 'attorney';
 
-      // Wenn der authentifizierte Benutzer ein "Attorney" ist
-      if (req.user.role === 'attorney') {
-         return next();
+      switch (req.method) {
+         case 'GET':
+            // Sowohl Eigentümer als auch Anwälte können Tickets abrufen
+            if (isOwner || isAttorney) {
+               return next();
+            }
+            break;
+         case 'PUT':
+         case 'DELETE':
+            // Nur Eigentümer können Tickets aktualisieren/löschen (Anwälte könnten in Zukunft abhängig von der Geschäftslogik erlaubt sein)
+            if (isOwner) {
+               return next();
+            }
+            break;
+         default:
+            // Für alle anderen Methoden, lassen Sie es durch, oder fügen Sie zusätzliche Bedingungen hinzu, falls erforderlich
+            return next();
       }
 
       // Zugriff verweigert für alle anderen
@@ -25,5 +37,8 @@ async function authorizeTicketAccess(req, res, next) {
       res.status(500).json({ error: error.message });
    }
 }
+
+module.exports = authorizeTicketAccess;
+
 
 module.exports = authorizeTicketAccess;

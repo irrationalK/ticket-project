@@ -25,10 +25,34 @@ const ticketModel = {
       return rows;
    },
 
-   async updateTicket(ticketID, status, offense, notePicture, ticketPicture) {
-      await pool.query('UPDATE tickets SET status = ?, offense = ?, notePicture = ?, ticketPicture = ? WHERE ticketID = ?',
-         [status, offense, notePicture, ticketPicture, ticketID]);
+   async updateTicket(ticketID, offense, notePictureURL, ticketPictureURL) {
+      const updateData = [];
+      const queryValues = [];
+
+      if (offense) {
+         updateData.push('offense = ?');
+         queryValues.push(offense);
+      }
+
+      if (notePictureURL) {
+         updateData.push('notePicture = ?');
+         queryValues.push(notePictureURL);
+      }
+
+      if (ticketPictureURL) {
+         updateData.push('ticketPicture = ?');
+         queryValues.push(ticketPictureURL);
+      }
+
+      // Wenn keine Daten zur Aktualisierung vorhanden sind, können wir hier einen Fehler auslösen oder einfach zurückkehren
+      if (updateData.length === 0) {
+         throw new Error('No fields provided for update');
+      }
+
+      const query = `UPDATE tickets SET ${updateData.join(', ')} WHERE ticketID = ?`;
+      await pool.query(query, [...queryValues, ticketID]);
    },
+
 
    async deleteTicket(ticketID) {
       await pool.query('DELETE FROM tickets WHERE ticketID = ?', [ticketID]);

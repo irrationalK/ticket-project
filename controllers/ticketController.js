@@ -10,6 +10,7 @@ const ticketController = {
          let notePictureURL, ticketPictureURL;
 
          if (req.files && req.files.notePicture) {
+            console.log(req.files.notePicture);
             notePictureURL = await s3Upload(req.files.notePicture[0]);
          }
 
@@ -65,8 +66,33 @@ const ticketController = {
    async updateTicket(req, res) {
       try {
          const ticketID = req.params.ticketID;
-         const { status, offense, note_picture, ticket_picture } = req.body;
-         await ticketModel.updateTicket(ticketID, status, offense, note_picture, ticket_picture);
+         const { offense } = req.body;
+
+         const ticket = await ticketModel.getTicketById(ticketID);
+         if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+         }
+
+         if (ticket.userID !== req.user.id) {
+            return res.status(403).json({ message: "You don't have permission to update this ticket." });
+         }
+
+         let notePictureURL, ticketPictureURL;
+         // Prüfen, ob Dateien hochgeladen wurden, und URLs aktualisieren
+         if (req.files) {
+            const notePictureFile = req.files['notePicture'] ? req.files['notePicture'][0] : null;
+            const ticketPictureFile = req.files['ticketPicture'] ? req.files['ticketPicture'][0] : null;
+
+            if (notePictureFile) {
+               notePictureURL = await s3Upload(notePictureFile);
+            }
+
+            if (ticketPictureFile) {
+               ticketPictureURL = await s3Upload(ticketPictureFile);
+            }
+         }
+
+         await ticketModel.updateTicket(ticketID, offense, notePictureURL, ticketPictureURL);
          res.status(200).json({ message: 'Ticket updated successfully' });
       } catch (error) {
          res.status(500).json({ error: error.message });
