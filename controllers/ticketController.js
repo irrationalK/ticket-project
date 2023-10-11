@@ -1,5 +1,5 @@
 const ticketModel = require('../models/ticketModel')
-const { s3Upload, s3Delete } = require('./fileController')
+const { s3Upload, s3Delete, getSignedUrlForObject } = require('./fileController')
 
 const ticketController = {
    async createTicket(req, res) {
@@ -33,10 +33,6 @@ const ticketController = {
             return res.status(404).json({ message: 'Ticket not found' });
          }
 
-         if (ticket.userID !== req.user.id) {
-            return res.status(403).json({ message: 'You do not have permission to access this ticket.' });
-         }
-
          res.status(200).json(ticket);
       } catch (error) {
          res.status(500).json({ error: error.message });
@@ -62,6 +58,41 @@ const ticketController = {
       }
    },
 
+   async getTicketImage(req, res) {
+      try {
+         const ticketID = req.params.ticketID;
+         const ticket = await ticketModel.getTicketById(ticketID);
+         if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+         }
+
+         let noteUrl, ticketUrl;
+
+         if (ticket.notePicture) {
+            noteUrl = await getSignedUrlForObject(ticket.notePicture).catch((error) => {
+               console.error("Error generating signed URL for note picture:", error);
+            });
+         }
+
+         if (ticket.ticketPicture) {
+            ticketUrl = await getSignedUrlForObject(ticket.ticketPicture).catch((error) => {
+               console.error("Error generating signed URL for ticket picture:", error);
+            });
+         }
+
+         if (!noteUrl && !ticketUrl) {
+            return res.status(404).json({ message: 'No images found for this ticket' });
+         }
+
+         res.json({
+            noteUrl: noteUrl || 'Not available',
+            ticketUrl: ticketUrl || 'Not available'
+         });
+      } catch (error) {
+         res.status(500).json({ error: error.message });
+      }
+   },
+
    async updateTicket(req, res) {
       try {
          const ticketID = req.params.ticketID;
@@ -70,10 +101,6 @@ const ticketController = {
          const ticket = await ticketModel.getTicketById(ticketID);
          if (!ticket) {
             return res.status(404).json({ message: 'Ticket not found' });
-         }
-
-         if (ticket.userID !== req.user.id) {
-            return res.status(403).json({ message: "You don't have permission to update this ticket." });
          }
 
          let notePictureFilename, ticketPictureFilename;

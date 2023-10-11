@@ -13,14 +13,15 @@ router.post('/', upload.fields([
 ]), authenticate, authorize('user'), ticketController.createTicket);   // Usergruppe
 
 router.get('/users/me', authenticate, ticketController.getTicketsByUser);  // Ersteller
-router.get('/:ticketID', authenticate, authorizeTicketAccess, ticketController.getTicket); // Ersteller und alle Anwälte
-router.get('/open', authenticate, authorize('attorney'), ticketController.getOpenTickets); // Anwälte
+router.get('/openTickets', authenticate, authorize('attorney'), ticketController.getOpenTickets); // Anwälte
+router.get('/ticket/:ticketID', authenticate, authorizeTicketAccess, ticketController.getTicket); // Ersteller und alle Anwälte
+router.get('/ticket/:ticketID/images', authenticate, authorizeTicketAccess, ticketController.getTicketImage);
 
-router.put('/:ticketID', upload.fields([
+router.put('/ticket/:ticketID', upload.fields([
    { name: 'notePicture', maxCount: 1 },
    { name: 'ticketPicture', maxCount: 1 }
-]), authenticate, authorizeTicketAccess, ticketController.updateTicket);
+]), authenticate, authorizeTicketAccess, ticketController.updateTicket); // Ersteller
 
-router.delete('/:ticketID', authenticate, authorizeTicketAccess, ticketController.deleteTicket);   // Nur Ersteller
+router.delete('/:ticketID', authenticate, authorizeTicketAccess, ticketController.deleteTicket);   // Ersteller
 
 module.exports = router;

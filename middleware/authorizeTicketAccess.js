@@ -39,6 +39,3 @@ async function authorizeTicketAccess(req, res, next) {
 }
 
 module.exports = authorizeTicketAccess;
-
-
-module.exports = authorizeTicketAccess;

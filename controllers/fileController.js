@@ -1,5 +1,6 @@
 const { Upload } = require("@aws-sdk/lib-storage");
-const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { DeleteObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const s3 = require('../config/s3Config');
 const crypto = require('crypto');
 
@@ -51,8 +52,23 @@ const uploadFile = async (req, res) => {
    }
 };
 
+const getSignedUrlForObject = async (filename) => {
+   const getObjectParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: filename,
+      Expires: 60 * 5, // Die URL ist 5 Minuten lang gültig
+   };
+
+   const signedUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), {
+      expiresIn: getObjectParams.Expires,
+   });
+
+   return signedUrl;
+}
+
 module.exports = {
    s3Upload,
    s3Delete,
-   uploadFile
+   uploadFile,
+   getSignedUrlForObject
 };
