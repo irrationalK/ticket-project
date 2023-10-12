@@ -4,16 +4,20 @@ const offerController = require('../controllers/offerController');
 const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
 
-// Alle Anwälte
-router.post('/submit', authenticate, authorize('attorney'), offerController.submitOffer);
+// Angebot erstellen - Zugriffrechte: Alle Anwälte
+router.post('/', authenticate, authorize('attorney'), offerController.submitOffer);
 
-// Ticketinhaber
-router.get('/ticket/:ticketID', authenticate, authorize('ticketOwner'), offerController.getOffersByTicketId);
-router.put('/offer/:offerID', authenticate, authorize('ticketOwner'), offerController.handleOffer);
+// Angebote für ein bestimmtes Ticket abrufen
+router.get('/tickets/:ticketID', authenticate, authorize('ticketOwner'), offerController.getOffersByTicketId);
 
-// Angebotersteller
+// Alle Angebote eines Anwalts abrufen
 router.get('/attorney/me', authenticate, authorize('attorney'), offerController.getOffersByAttorney);
-router.put('/offer/:offerID/update', authenticate, authorize('offerOwner'), offerController.updateOffer);
-router.delete('/offer/:offerID', authenticate, authorize('offerOwner'), offerController.deleteOffer);
+
+// Angebot Annehmen/Ablehnen von Ticketbesitzer
+router.put('/:offerID/handle', authenticate, authorize('ticketOwner'), offerController.handleOffer);
+
+// Angebot aktuallieren oder löschen - Nur Angebotsersteller
+router.put('/:offerID', authenticate, authorize('offerOwner'), offerController.updateOffer);
+router.delete('/:offerID', authenticate, authorize('offerOwner'), offerController.deleteOffer);
 
 module.exports = router;
