@@ -131,6 +131,24 @@ const ticketController = {
       }
    },
 
+   async updateTicketStatus(req, res) {
+      try {
+         const ticketID = req.params.ticketID;
+         const { status } = req.body;
+
+         const ticket = await ticketModel.getTicketById(ticketID);
+         if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+         }
+
+         await ticketModel.updateTicketStatus(ticketID, status);
+         res.status(200).json({ message: 'Ticket status updated successfully' });
+
+      } catch (error) {
+         res.status(500).json({ error: error.message });
+      }
+   },
+
    async deleteTicket(req, res) {
       try {
          const ticketID = req.params.ticketID;

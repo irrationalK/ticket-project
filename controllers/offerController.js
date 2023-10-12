@@ -1,4 +1,5 @@
 const offerModel = require('../models/offerModel');
+const ticketModel = require('../models/ticketModel')
 
 const offerController = {
    async submitOffer(req, res) {
@@ -50,6 +51,11 @@ const offerController = {
 
          if (action === 'accept') {
             await offerModel.acceptOffer(offerID);
+
+            // Ticketstatus auf "processing" aktualisieren
+            const ticketID = await offerModel.getTicketIdByOfferId(offerID)
+            await ticketModel.updateTicketStatus(ticketID, 'processing');
+
             res.status(200).json({ message: 'Offer accepted' });
          } else if (action === 'reject') {
             await offerModel.rejectOffer(offerID);

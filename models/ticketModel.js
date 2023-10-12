@@ -45,7 +45,6 @@ const ticketModel = {
          queryValues.push(ticketPictureFilename);
       }
 
-      // Wenn keine Daten zur Aktualisierung vorhanden sind, können wir hier einen Fehler auslösen oder einfach zurückkehren
       if (updateData.length === 0) {
          throw new Error('No fields provided for update');
       }
@@ -54,6 +53,10 @@ const ticketModel = {
       await pool.query(query, [...queryValues, ticketID]);
    },
 
+   async updateTicketStatus(ticketID, status) {
+      const query = 'UPDATE tickets SET status = ? WHERE ticketID = ?';
+      await pool.query(query, [status, ticketID]);
+   },
 
    async deleteTicket(ticketID) {
       await pool.query('DELETE FROM tickets WHERE ticketID = ?', [ticketID]);

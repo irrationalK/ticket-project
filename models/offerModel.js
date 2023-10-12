@@ -25,9 +25,8 @@ const offerModel = {
       const [rows] = await pool.query(query, [offerID]);
       if (rows.length > 0) {
          return rows[0].ticketID;
-      } else {
-         throw new Error('No offer found with the given offerID');
       }
+      return null;
    },
 
    async getOffersByAttorneyId(attorneyID) {
