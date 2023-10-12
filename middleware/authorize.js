@@ -18,10 +18,19 @@ const authorize = (...allowed) => {
          if (allowed.includes('offerOwner') && await offerModel.isUserOfferOwner(user.id, req.params.offerID)) {
             return next();
          }
-         console.log(await ticketModel.isUserTicketOwner(user.id, req.params.ticketID)) //TODO req.params.ticketID ändern, da nicht immer vorhanden
-         if (allowed.includes('ticketOwner') && await ticketModel.isUserTicketOwner(user.id, req.params.ticketID)) {
-            return next();
+
+         if (allowed.includes('ticketOwner')) {
+            let ticketID = req.params.ticketID;
+
+            if (!ticketID) {
+               ticketID = await offerModel.getTicketIdByOfferId(req.params.offerID);
+            }
+
+            if (await ticketModel.isUserTicketOwner(user.id, ticketID)) {
+               return next();
+            }
          }
+
       } catch (error) {
          return res.status(500).json({ error: error.message });
       }
@@ -31,16 +40,3 @@ const authorize = (...allowed) => {
 };
 
 module.exports = authorize;
-
-
-// const authorize = (role) => {
-//    return (req, res, next) => {
-//       if (req.user && req.user.role === role) {
-//          next();
-//       } else {
-//          res.status(403).json({ error: "Access forbidden." });
-//       }
-//    }
-// };
-
-// module.exports = authorize;

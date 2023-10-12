@@ -20,6 +20,22 @@ const offerModel = {
       return rows;
    },
 
+   async getTicketIdByOfferId(offerID) {
+      const query = 'SELECT ticketID FROM offers WHERE offerID = ?';
+      const [rows] = await pool.query(query, [offerID]);
+      if (rows.length > 0) {
+         return rows[0].ticketID;
+      } else {
+         throw new Error('No offer found with the given offerID');
+      }
+   },
+
+   async getOffersByAttorneyId(attorneyID) {
+      const query = 'SELECT * FROM offers WHERE attorneyID = ?';
+      const [results] = await pool.query(query, [attorneyID]);
+      return results;
+   },
+
    async acceptOffer(offerID) {
       const status = 'accepted';
       const query = 'UPDATE offers SET status = ? WHERE offerID = ?';

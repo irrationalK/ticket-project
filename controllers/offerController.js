@@ -13,6 +13,7 @@ const offerController = {
 
    async updateOffer(req, res) {
       try {
+         console.log(req.body);
          const { offerID } = req.params;
          const { price, description } = req.body;
          await offerModel.updateOffer(offerID, price, description);
@@ -32,21 +33,30 @@ const offerController = {
       }
    },
 
-   async acceptOffer(req, res) {
+   async getOffersByAttorney(req, res) {
       try {
-         const { offerID } = req.params;
-         await offerModel.acceptOffer(offerID);
-         res.status(200).json({ message: 'Offer accepted' });
+         const attorneyID = req.user.id;
+         const offers = await offerModel.getOffersByAttorneyId(attorneyID);
+         res.status(200).json(offers);
       } catch (error) {
          res.status(500).json({ error: error.message });
       }
    },
 
-   async rejectOffer(req, res) {
+   async handleOffer(req, res) {
       try {
          const { offerID } = req.params;
-         await offerModel.rejectOffer(offerID);
-         res.status(200).json({ message: 'Offer rejected' });
+         const { action } = req.body; // 'accept' oder 'reject'
+
+         if (action === 'accept') {
+            await offerModel.acceptOffer(offerID);
+            res.status(200).json({ message: 'Offer accepted' });
+         } else if (action === 'reject') {
+            await offerModel.rejectOffer(offerID);
+            res.status(200).json({ message: 'Offer rejected' });
+         } else {
+            res.status(400).json({ error: 'Invalid action' });
+         }
       } catch (error) {
          res.status(500).json({ error: error.message });
       }
